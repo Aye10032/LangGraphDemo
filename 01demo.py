@@ -5,6 +5,7 @@ import yaml
 
 from langchain_community.chat_models.baidu_qianfan_endpoint import QianfanChatEndpoint
 from langchain_core.messages import HumanMessage, BaseMessage, ToolMessage
+from langchain_core.runnables.graph import CurveStyle, MermaidDrawMethod
 from langchain_core.tools import tool
 from langchain_core.utils.function_calling import convert_to_openai_tool
 from langgraph.graph import END, MessageGraph
@@ -86,6 +87,11 @@ graph.add_edge('multiply', END)
 
 graph.set_entry_point('start')
 runnable = graph.compile()
+runnable.get_graph().draw_mermaid_png(
+    curve_style=CurveStyle.BASIS,
+    output_file_path='image/01demo.png',
+    draw_method=MermaidDrawMethod.PYPPETEER
+)
 
 res1 = runnable.invoke(HumanMessage('3乘4等于几？'))
 res2 = runnable.invoke(HumanMessage('蓝光对微藻有什么影响？'))
