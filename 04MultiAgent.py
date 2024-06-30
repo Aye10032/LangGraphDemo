@@ -93,11 +93,12 @@ class AgentState(TypedDict):
 # Helper function to create a node for a given agent
 def agent_node(state: AgentState, agent: RunnableSerializable[dict, BaseMessage], name: str):
     result = agent.invoke(state)
+    print(state)
     # We convert the agent output into a format that is suitable to append to the global state
     if isinstance(result, ToolMessage):
         pass
     else:
-        result = AIMessage(**result.model_dump(exclude={"type", "name"}), name=name)
+        result = AIMessage(**result.dict(exclude={"type", "name"}), name=name)
     return {
         "messages": [result],
         # Since we have a strict workflow, we can
@@ -129,7 +130,7 @@ def build_graph() -> CompiledGraph:
     research_agent = create_agent(
         llm,
         [tavily_tool],
-        system_message="你需要为对话生成助手提供它所需要的准确的数据。",
+        system_message="你需要为chart_generator提供它所需要的数据。",
     )
     research_node = functools.partial(agent_node, agent=research_agent, name="Researcher")
 
@@ -137,7 +138,7 @@ def build_graph() -> CompiledGraph:
     chart_agent = create_agent(
         llm,
         [python_repl],
-        system_message="用户可以看到你显示的任何图表。",
+        system_message="用户可以看到你绘制的任意图表。",
     )
     chart_node = functools.partial(agent_node, agent=chart_agent, name="chart_generator")
 
@@ -190,9 +191,9 @@ def main() -> None:
         {
             "messages": [
                 HumanMessage(
-                    content="Fetch the UK's GDP over the past 5 years,"
-                            " then draw a line graph of it."
-                            " Once you code it up, finish."
+                    content="获取英国过去5年的GDP,"
+                            "然后绘制出折线图并保存为output.jpg。"
+                            "当代码执行完毕时，你的任务结束。"
                 )
             ],
         },
