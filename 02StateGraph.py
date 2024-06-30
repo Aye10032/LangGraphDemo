@@ -16,7 +16,8 @@ os.environ["LANGCHAIN_PROJECT"] = 'langgraph'
 
 with open('api_key.yaml', 'r') as f:
     yaml_text = f.read()
-api_key = yaml.load(yaml_text, Loader=yaml.FullLoader)['zhipu']
+llm_url = yaml.load(yaml_text, Loader=yaml.FullLoader)['zhipu']['url']
+llm_api = yaml.load(yaml_text, Loader=yaml.FullLoader)['zhipu']['ak']
 
 
 class AgentState(TypedDict):
@@ -41,7 +42,8 @@ tool_executor = ToolExecutor(tools)
 llm = ChatOpenAI(
     model="glm-4",
     openai_api_base='https://open.bigmodel.cn/api/paas/v4/',
-    openai_api_key=api_key
+    # openai_api_base=llm_url,
+    openai_api_key=llm_api
 )
 
 llm = llm.bind_tools([convert_to_openai_function(t) for t in tools])

@@ -123,7 +123,7 @@ def router(state) -> Literal["call_tool", "__end__", "continue"]:
 def build_graph() -> CompiledGraph:
     llm = ChatOpenAI(
         model="glm-4",
-        openai_api_base=llm_url,
+        openai_api_base='https://open.bigmodel.cn/api/paas/v4/',
         openai_api_key=llm_api
     )
 
